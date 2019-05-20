@@ -29,13 +29,14 @@ class Graph:
         queue = Queue()
         queue.enqueue(starting_vertex)
         visited = set()
-        while queue.size > 0:
+        while queue.size() > 0:
             vertex = queue.dequeue()
             if vertex not in visited:
                 print(vertex)
                 visited.add(vertex)
                 for next_vertex in self.vertices[vertex]:
                     queue.enqueue(next_vertex)
+    
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
@@ -51,27 +52,54 @@ class Graph:
                 visited.add(vertex)
                 for next_vertex in self.vertices[vertex]:
                     stack.push(next_vertex)
-    def dft_recursive(self, starting_vertex):
+    
+    def dft_recursive(self, starting_vertex, visited = None):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         This should be done using recursion.
         """
-        pass  # TODO
+        
+        if visited is None:
+            visited = set()
+        print(starting_vertex)
+        visited.add(starting_vertex)
+        for next_vertex in self.vertices[starting_vertex]:
+            if next_vertex not in visited:
+                self.dft_recursive(next_vertex, visited)
+    
     def bfs(self, starting_vertex, destination_vertex):
         """
         Return a list containing the shortest path from
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        pass  # TODO
+        queue = Queue()
+        queue.enqueue((starting_vertex, [starting_vertex]))
+        while queue.size() > 0:
+            vertex = queue.dequeue()
+            for next_vertex in self.vertices[vertex[0]]:
+                if next_vertex == destination_vertex:
+                    return vertex[1] + [next_vertex]
+                else:
+                    queue.enqueue((next_vertex, vertex[1] + [next_vertex]))
+
+
     def dfs(self, starting_vertex, destination_vertex):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        stack = Stack()
+        stack.push((starting_vertex, [starting_vertex]))
+        while stack.size() > 0:
+            vertex = stack.pop()
+            for next_vertex in self.vertices[vertex[0]]:
+                if next_vertex == destination_vertex:
+                    return vertex[1] + [next_vertex]
+                else:
+                    stack.push((next_vertex, vertex[1] + [next_vertex]))
 
 
 
