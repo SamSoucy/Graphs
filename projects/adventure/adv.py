@@ -2,6 +2,7 @@ from room import Room
 from player import Player
 from world import World
 
+
 import random
 
 # Load world
@@ -24,6 +25,45 @@ player = Player("Name", world.startingRoom)
 
 traversalPath = []
 
+# keep track of visited rooms
+visited = {}
+# getExits method to find possible exits
+possible_exits = player.currentRoom.getExits()
+# each possible exit needs a question mark
+visited[player.currentRoom.id] = {possible_exits[i]: "?" for i in range(0, len(possible_exits))}
+# keep track of paths to go backwards
+backwards = []
+
+# length of visited rooms is less then the room graph
+while len(visited) < len(roomGraph) -1:
+    if player.currentRoom.id not in visited:
+        exits = player.currentRoom.getExits()
+        visited[player.currentRoom.id] = {exits[i]: '?' for i in range(0, len(exits))}
+    available_exits = []
+    for exit, room in visited[player.currentRoom.id].items():
+        if room == '?':
+            available_exits.append(exit)
+    # while there are no unexplored exits avaiable, but there are in backwards path
+    while len(available_exits) == 0 and len(backwards) > 0:
+        go_back = backwards.pop()
+        traversalPath.append(go_back)
+        player.travel(go_back)
+        new_exits = []
+        for exit, room in visited[player.currentRoom.id].items():
+            if room == '?':
+                new_exits.append(exit)
+        available_exits = new_exits
+    # set the current room's last exit to the room in that direction, will be moving that way
+    visited[player.currentRoom.id][available_exits[-1]] = player.currentRoom.getRoomInDirection(available_exits[-1])
+    move = available_exits.pop()
+    opposites = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+    backwards.append(opposites[move])
+    traversalPath.append(move)
+    player.travel(move)
+
+
+
+
 
 
 # TRAVERSAL TEST
@@ -45,7 +85,7 @@ else:
 
 #######
 # UNCOMMENT TO WALK AROUND
-#######
+######
 # player.currentRoom.printRoomDescription(player)
 # while True:
 #     cmds = input("-> ").lower().split(" ")
